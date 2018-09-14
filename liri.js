@@ -1,14 +1,3 @@
-// // to read and set any environment variables with the dotenv package
-// require("dotenv").config();
-
-// // import keys.js
-// var sptKeys = require("./keys.js");
-// var spotify = new Spotify(sptKeys.spotify);
-
-
-
-
-//
 var doThis = process.argv[2];
 switch (doThis) {
     case "movie-this":
@@ -27,8 +16,46 @@ switch (doThis) {
         break;
 }
 
+function spotifyThis() {
+    require("dotenv").config();
+    var spotifyKeys = require("./keys.js");
+    var Spotify = require('node-spotify-api');
+    var spotify = new Spotify(spotifyKeys);
+
+    var queryTerm = "Hotel California";
+    for (var i = 3; i < process.argv.length; i++) {
+        if (i > 3 && i < process.argv.length) {
+            queryTerm = queryTerm + "+" + process.argv[i];
+        } else {
+            queryTerm = "";
+            queryTerm += process.argv[i];
+        }
+    }
+
+    spotify.search({
+        type: 'track',
+        query: queryTerm
+    }, function (err, data) {
+        if (err) {
+            return console.log('Error occurred: ' + err);
+        }
+
+        //
+        console.log("\n******************************\n");
+        console.log("Artist: " + data.tracks.items[0].artists[0].name);
+        console.log("\nSong: " + data.tracks.items[0].name);
+        console.log("\nLink: " + data.tracks.items[0].preview_url);
+        console.log("\nAlbum: " + data.tracks.items[0].album.name);
+        console.log("\n******************************\n");
+
+    }); // End of spotifyThis()
+
+
+} // End of spotifyThis()
+
 function movieThis(movieName) {
     var request = require("request");
+
     var movieName = "Mr.+Nobody";
     for (var i = 3; i < process.argv.length; i++) {
         if (i > 3 && i < process.argv.length) {
@@ -38,6 +65,7 @@ function movieThis(movieName) {
             movieName += process.argv[i];
         }
     }
+
     var queryUrl = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy";
     request(queryUrl, function (error, response, body) {
         if (!error && response.statusCode === 200) {
@@ -54,3 +82,12 @@ function movieThis(movieName) {
         }
     });
 } // End of movieThis()
+
+function concertThis() {
+    /* 
+    This API needed to send developers "written consent" in order to let us
+    use their API. I just see this at the night of the submission of assignment,
+    so I did not have enough time to get their written consent. For more info, 
+    visit: http://www.artists.bandsintown.com/bandsintown-api 
+    */
+} // End of concertThis()
